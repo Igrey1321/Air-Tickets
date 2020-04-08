@@ -1,17 +1,17 @@
 //===============================variables
 const formSearch = document.querySelector('.form-search'),
-    inputCitiesForm = formSearch.querySelector('.input__cities-from'),
-    dropdownCitiesFrom = formSearch.querySelector('.dropdown__cities-from'),
-    inputCitiesTo = formSearch.querySelector('.input__cities-to'),
-    dropdownCitiesTo = formSearch.querySelector('.dropdown__cities-to'),
-    inputDateDepart = formSearch.querySelector('.input__date-depart'),
-    cheapestTicket = document.getElementById('cheapest-ticket'),
-    otherCheapTickets = document.getElementById('other-cheap-tickets')
+    [inputCitiesForm, dropdownCitiesFrom, inputCitiesTo, dropdownCitiesTo
+        , inputDateDepart] = 
+    ['.input__cities-from', '.dropdown__cities-from', '.input__cities-to'
+        , '.dropdown__cities-to', '.input__date-depart']
+            .map (item => formSearch.querySelector (item)),
+    [cheapestTicket,otherCheapTickets] = ['cheapest-ticket', 'other-cheap-tickets']
+        .map(item => document.getElementById(item))
 //===============================data
 const CITY_API = 'http://api.travelpayouts.com/data/ru/cities.json',
     PROXY = 'https://cors-anywhere.herokuapp.com/',
     API_KEY = '3ad30195d50278e3bd50f10fad1257fe',
-    CALENDAR = 'http://min-prices.aviasales.ru/calendar_preload'
+    CALENDAR = 'http://min-prices.aviasales.ru/calendar_preload',
     MAX_COUNT = 10
 let city = []
 //===============================function
@@ -30,6 +30,7 @@ const getData = (url, callback, reject = console.error) => {
 }
 
 const showCity = (input, list) => {
+    input.style.color = '#fff'
     list.textContent = ''
     if (input.value === '') return
         const filterCity = city.filter(item => {
@@ -74,7 +75,7 @@ const getChanges = numb => {
     }
 }
 
-const getLinkAviasales = (data) =>{
+const getLinkAviasales = (data) => {
     let link = 'https://www.aviasales.ru/search/'
     link += data.origin
     const date = new Date(data.depart_date)
@@ -148,10 +149,7 @@ const renderCheap = (data, dataWhen) => {
 }
 //===============================callback
 inputCitiesForm.addEventListener('input'
-    , () => {
-        showCity(inputCitiesForm, dropdownCitiesFrom)
-        inputCitiesForm.style.color = '#fff'
-    })
+    , () => showCity(inputCitiesForm, dropdownCitiesFrom))
 
 inputCitiesTo.addEventListener('input'
     , () => showCity(inputCitiesTo, dropdownCitiesTo))
@@ -176,7 +174,8 @@ formSearch.addEventListener('submit', (event) => {
                 , response => renderCheap(response, formData.when)
                 , () => alert('Нету билетов по данном направлении'))
         } else {
-            inputCitiesForm.style.color = '#f00'
+            formData.from ? null : inputCitiesForm.style.color = '#f00'
+            formData.to ? null : inputCitiesTo.style.color = '#f00'
         }
 })
 //===============================function call
